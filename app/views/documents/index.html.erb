@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title></title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+</head>
+<body>
+  <div class="container">
+    <h1>PDF Fusion</h1>
+
+    <!-- Upload Form -->
+    <div class="upload-section">
+      <h2>Upload New Document</h2>
+      <%= form_with(model: Document.new, url: documents_path, local: true, html: { multipart: true }) do |form| %>
+        <div class="form-group">
+          <%= form.label :title, "Document Title" %>
+          <%= form.text_field :title, required: true %>
+        </div>
+        <div class="form-group">
+          <%= form.label :file, "Select File (.docx)" %>
+          <%= form.file_field :file, accept: ".docx", required: true %>
+        </div>
+        <%= form.submit "Upload Document", class: "btn btn-upload" %>
+      <% end %>
+    </div>
+
+    <!-- Documents Table -->
+    <table class="document-table">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>File</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @documents.each do |document| %>
+          <% if document.file.attached? %>
+            <tr>
+              <td><%= document.title %></td>
+              <td>
+                <a href="<%= rails_blob_url(document.file) %>" target="_blank">
+                  <%= document.file.filename %>
+                </a>
+              </td>
+              <td>
+                <%= link_to "Download", download_document_path(document), class: "btn btn-primary" %>
+                <%= link_to "Delete", document_path(document), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-delete" %> 
+              </td>
+            </tr>
+          <% end %>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+</body>
+</html>
